@@ -42,7 +42,10 @@
 	PROCESS {
 
 		#execute pacli
-		$Return = Invoke-PACLICommand $Script:PV.ClientPath FILESLIST "$($PSBoundParameters | ConvertTo-ParameterString) OUTPUT (ALL,ENCLOSE)"
+		# new column CATEGORYMODIFICATIONDATE returned in v13.x
+		# Add explicit column list to avoid breaking in the future
+		$Return = Invoke-PACLICommand $Script:PV.ClientPath FILESLIST ("$($PSBoundParameters | ConvertTo-ParameterString) " +
+			"OUTPUT (NAME,INTERNALNAME,CREATIONDATE,CREATEDBY,DELETIONDATE,DELETEDBY,LASTUSEDDATE,LASTUSEDBY,SIZE,HISTORY,RETRIEVELOCK,LOCKDATE,LOCKEDBY,FILEID,DRAFT,ACCESSED,LOCKEDBYGW,VALIDATIONSTATUS,LOCKEDBYUSERID,CATEGORYMODIFICATIONDATE,ENCLOSE)")
 
 		if ($Return.ExitCode -eq 0) {
 
@@ -53,10 +56,10 @@
 				$Results = $Return.StdOut | ConvertFrom-PacliOutput
 
 				#loop through results
-				For ($i = 0 ; $i -lt $Results.length ; $i += 19) {
+				For ($i = 0 ; $i -lt $Results.length ; $i += 20) {
 
 					#Get Range from array
-					$values = $Results[$i..($i + 19)]
+					$values = $Results[$i..($i + 20)]
 
 					#Output Object
 					[PSCustomObject] @{
@@ -80,6 +83,7 @@
 						"LockedByGW"       = $values[16]
 						"ValidationStatus" = $values[17]
 						"LockedByUserID"   = $values[18]
+						"CategoryModificationDate" = $values[19]
 						"Safename"         = $safe
 						"Folder"           = $folder
 
