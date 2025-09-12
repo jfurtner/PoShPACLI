@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.27.1] - 2025-09-12
+- Bugfix for `Get-PVFileList` with PACLI > v13
+
 ## [2.1.27] - 2020-04-01
 
 - `Set-PVSafe`
